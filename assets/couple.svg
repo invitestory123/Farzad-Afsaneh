@@ -2,7 +2,7 @@
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#2a1614"/>
-      <stop offset="50%" stop-color="#1e0f0e"/>
+      <stop offset="45%" stop-color="#1e0f0e"/>
       <stop offset="100%" stop-color="#140908"/>
     </linearGradient>
     <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -12,12 +12,7 @@
       <stop offset="75%" stop-color="#d4b060"/>
       <stop offset="100%" stop-color="#805d25"/>
     </linearGradient>
-    <linearGradient id="goldSoft" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ebd8a8"/>
-      <stop offset="50%" stop-color="#ba9652"/>
-      <stop offset="100%" stop-color="#8a672c"/>
-    </linearGradient>
-    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+    <radialGradient id="centerGlow" cx="50%" cy="45%" r="55%">
       <stop offset="0%" stop-color="#fdf4db" stop-opacity="0.22"/>
       <stop offset="50%" stop-color="#d4b060" stop-opacity="0.08"/>
       <stop offset="100%" stop-color="#140908" stop-opacity="0"/>
@@ -30,7 +25,7 @@
 
   <!-- Background -->
   <rect width="1000" height="1200" fill="url(#bgGrad)"/>
-  <circle cx="500" cy="580" r="450" fill="url(#centerGlow)"/>
+  <circle cx="500" cy="500" r="450" fill="url(#centerGlow)"/>
 
   <!-- Outer Double Border -->
   <rect x="35" y="35" width="930" height="1130" rx="28" fill="none" stroke="url(#gold)" stroke-width="2" opacity="0.65"/>
@@ -83,24 +78,12 @@
     <text x="0" y="45" font-family="'Playfair Display', 'Cormorant Garamond', serif" font-size="88" font-style="italic" font-weight="600" text-anchor="middle" fill="url(#gold)" filter="url(#glow)">A &amp; F</text>
   </g>
 
-  <!-- Persian Title -->
-  <text x="500" y="720" font-family="'Nastaliq Embedded', 'Noto Nastaliq Urdu', 'IranNastaliq', serif" font-size="64" text-anchor="middle" fill="url(#gold)" filter="url(#glow)">محفل شیرینی خوری</text>
-
-  <!-- English Subtitle & Names -->
-  <text x="500" y="785" font-family="'Jost', 'Avenir Next', sans-serif" font-size="19" letter-spacing="8" text-transform="uppercase" text-anchor="middle" fill="#ebd6a5" opacity="0.9">Engagement Celebration</text>
-
-  <line x1="320" y1="820" x2="680" y2="820" stroke="url(#gold)" stroke-width="1" opacity="0.6"/>
-  <circle cx="500" cy="820" r="3.5" fill="url(#gold)"/>
-
-  <text x="500" y="885" font-family="'Playfair Display', 'Bodoni 72', serif" font-size="52" font-style="italic" text-anchor="middle" fill="url(#gold)" filter="url(#glow)">Afsaneh &amp; Farzad</text>
-
-  <text x="500" y="940" font-family="'Cormorant Garamond', Georgia, serif" font-size="28" font-style="italic" text-anchor="middle" fill="#d9bf87">Sunrise Event Center &amp; Banquet Hall</text>
-  <text x="500" y="975" font-family="'Jost', sans-serif" font-size="16" letter-spacing="5" text-transform="uppercase" text-anchor="middle" fill="#ebd6a5" opacity="0.8">Rancho Cordova, California</text>
-
-  <!-- Date -->
-  <g transform="translate(500, 1030)">
-    <line x1="-120" y1="0" x2="120" y2="0" stroke="url(#gold)" stroke-width="1" opacity="0.5"/>
-    <text x="0" y="-12" font-family="'Jost', sans-serif" font-size="16" letter-spacing="6" text-transform="uppercase" text-anchor="middle" fill="#ebd6a5">Monday · December 14 · 2026</text>
-    <text x="0" y="24" font-family="'Jost', sans-serif" font-size="14" letter-spacing="4" text-transform="uppercase" text-anchor="middle" fill="#bfa168">5:00 PM in the Evening</text>
+  <!-- Elegant Decorative Scroll / Divider Below Medallion -->
+  <g transform="translate(500, 680)" opacity="0.7">
+    <line x1="-180" y1="0" x2="-40" y2="0" stroke="url(#gold)" stroke-width="1"/>
+    <line x1="40" y1="0" x2="180" y2="0" stroke="url(#gold)" stroke-width="1"/>
+    <path d="M 0,-8 L 8,0 L 0,8 L -8,0 Z" fill="url(#gold)"/>
+    <circle cx="-180" cy="0" r="2.5" fill="url(#gold)"/>
+    <circle cx="180" cy="0" r="2.5" fill="url(#gold)"/>
   </g>
 </svg>
