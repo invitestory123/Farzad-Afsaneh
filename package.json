@@ -1,0 +1,30 @@
+{
+  "name": "farzad-afsaneh-shirinikhori",
+  "version": "1.0.0",
+  "description": "Luxury Engagement & Shirinikhori invitation for Farzad & Afsaneh (محفل شیرینی خوری)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "npx serve .",
+    "validate": "node --check wedding-data.js",
+    "check": "node --check wedding-data.js && node --check js/invitation.js && node --check js/rsvp.js && node --check js/themes.js && node --check js/motion.js",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "wedding-invitation",
+    "engagement-invitation",
+    "shirinikhori",
+    "afghan-wedding",
+    "persian-invitation"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "^3.5.0",
+    "vite": "^6.2.0"
+  }
+}

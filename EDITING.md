@@ -44,8 +44,18 @@ Edit `rsvp` in `wedding-data.js`:
 
 ---
 
-## Validation
+## Development & Validation
+
+Run local preview server:
+```bash
+npm run dev
+# or
+npx serve .
+```
+
 Validate syntax after editing:
 ```bash
-node --check wedding-data.js
+npm run validate
+# or check all JS files:
+npm run check
 ```
