@@ -72,7 +72,7 @@
       </footer>
     </main>
     <div class="media-controls" id="media-controls" hidden><button class="media-button" id="motion" aria-pressed="false" hidden>Pause motion</button><button class="media-button" id="music" aria-pressed="false" hidden>Play music</button></div>
-    <audio id="audio" loop preload="none"></audio><p id="status" class="status" role="status" hidden></p>`;
+    <audio id="audio" loop preload="auto" playsinline webkit-playsinline></audio><p id="status" class="status" role="status" hidden></p>`;
 
   const $ = id => document.getElementById(id);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -141,6 +141,7 @@
     else{const end=$('envelope-end');end.src=end.dataset.src;end.hidden=false;$('entrance').classList.add('opening');openingTimer=setTimeout(finishOpening,1800);}
   }
   $('open').addEventListener('click',openInvitation);
+  $('open').addEventListener('touchend',openInvitation);
   $('skip').addEventListener('click',finishOpening);
   opening.addEventListener('ended',finishOpening);
   opening.addEventListener('error',()=>{if(opened)finishOpening();});

@@ -65,7 +65,7 @@ button,input,textarea{font:inherit;color:inherit}
 #cover .vignette{position:absolute;inset:0;background:radial-gradient(80% 60% at 50% 48%,transparent 60%,rgba(120,70,70,.12) 100%);pointer-events:none}
 @keyframes envIn{from{transform:scale(1.06);filter:brightness(1.05)}to{transform:none;filter:none}}
 
-#seal{position:absolute;left:50.8%;top:48.1%;width:42.7%;aspect-ratio:520/546;transform:translate(-50%,-50%);border:0;padding:0;background:none;cursor:pointer;z-index:2;
+#seal{position:absolute;left:50.8%;top:48.1%;width:42.7%;aspect-ratio:520/546;transform:translate(-50%,-50%);border:0;padding:0;background:none;cursor:pointer;z-index:2;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
   animation:sealIn 1.1s .25s cubic-bezier(.2,.9,.25,1.2) both}
 #seal .wax{position:absolute;inset:0;border-radius:50%;animation:breathe 3.2s 1.4s ease-in-out infinite;filter:drop-shadow(0 6px 10px rgba(90,55,20,.35)) drop-shadow(0 1px 1px rgba(90,55,20,.4))}
 #seal .wax img{width:100%;height:100%;display:block}
@@ -231,7 +231,8 @@ footer{margin-top:16cqi;display:flex;flex-direction:column;align-items:center;wi
 /* music button */
 #music{position:fixed;z-index:40;top:calc(env(safe-area-inset-top,0px) + 14px);right:max(14px,calc((100vw - 540px)/2 + 14px));width:46px;height:46px;border-radius:50%;cursor:pointer;
   display:grid;place-items:center;border:1px solid rgba(190,150,80,.55);color:var(--gold-ink);background:rgba(255,249,242,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  box-shadow:0 6px 18px rgba(120,80,50,.18);transition:transform .2s ease,opacity .4s ease}
+  box-shadow:0 6px 18px rgba(120,80,50,.18);transition:transform .2s ease,opacity .4s ease;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 #music:active{transform:scale(.92)}
 #music .bars{display:flex;align-items:flex-end;gap:2.5px;height:16px}
 #music .bars i{width:3px;border-radius:2px;background:currentColor;height:30%}
@@ -283,6 +284,12 @@ footer{margin-top:16cqi;display:flex;flex-direction:column;align-items:center;wi
   <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
   <svg class="ic-play" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 2.5v11a.5.5 0 0 0 .76.43l9-5.5a.5.5 0 0 0 0-.86l-9-5.5A.5.5 0 0 0 4 2.5z"/></svg>
 </button>
+<audio id="bg-audio" preload="auto" loop playsinline webkit-playsinline x-webkit-airplay="allow">
+  <source src="./music.m4a" type="audio/mp4">
+  <source src="./music.mp3" type="audio/mpeg">
+  <source src="./media/music.m4a" type="audio/mp4">
+  <source src="./media/music.mp3" type="audio/mpeg">
+</audio>
 <div id="yt" aria-hidden="true"><div id="ytp"></div></div>
 
 <canvas id="dust" aria-hidden="true"></canvas>
@@ -444,77 +451,153 @@ var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)")
 /* ---------- music ---------- */
 var musicBtn = document.getElementById("music");
 var Music = {
-  mode: "none", ready: false, wantPlay: false, playing: false, failed: false, player: null, audio: null,
+  mode: "mp3", ready: false, wantPlay: false, playing: false, manuallyPaused: false, audio: null,
   init: function(){
-    if (CONFIG.mp3Url) { this.mode = "mp3"; this.initAudio(); }
-    else if (BUILD === "preview") { this.mode = "none"; }
-    else if (CONFIG.youtubeId) { this.mode = "yt"; this.initYT(); }
-  },
-  initAudio: function(){
-    var a = this.audio = new Audio();
-    a.preload = "auto"; a.loop = true; a.src = CONFIG.mp3Url; a.setAttribute("playsinline", "");
+    var a = this.audio = document.getElementById("bg-audio");
+    if (!a) {
+      a = this.audio = new Audio();
+      a.src = CONFIG.mp3Url || "./music.mp3";
+    }
+    a.loop = true;
+    a.playsInline = true;
+    a.setAttribute("playsinline", "");
+    a.setAttribute("webkit-playsinline", "");
     var self = this;
     a.addEventListener("playing", function(){ self.setPlaying(true); });
     a.addEventListener("pause", function(){ self.setPlaying(false); });
-    a.addEventListener("error", function(){ self.fail(); });
-    a.addEventListener("loadedmetadata", function(){ self.ready = true; });
-  },
-  initYT: function(){
-    var self = this;
-    var pv = { start: CONFIG.startSeconds, autoplay: 0, controls: 0, disablekb: 1, fs: 0, rel: 0, playsinline: 1, iv_load_policy: 3, modestbranding: 1 };
-    if (location.protocol.indexOf("http") === 0) pv.origin = location.origin;
-    window.onYouTubeIframeAPIReady = function(){
-      self.player = new YT.Player("ytp", {
-        width: 200, height: 200, videoId: CONFIG.youtubeId,
-        host: "https://www.youtube-nocookie.com",
-        playerVars: pv,
-        events: {
-          onReady: function(){ self.ready = true; if (self.wantPlay) self.play(); },
-          onStateChange: function(e){
-            if (e.data === 1) self.setPlaying(true);
-            else if (e.data === 2) self.setPlaying(false);
-            else if (e.data === 0) { self.player.seekTo(CONFIG.startSeconds, true); self.player.playVideo(); }
-          },
-          onError: function(){ self.fail(); }
+    a.addEventListener("ended", function(){
+      if (self.wantPlay && !self.manuallyPaused && self.audio) {
+        self.audio.currentTime = 0;
+        self.audio.play().catch(function(){});
+      }
+    });
+    a.addEventListener("error", function(){
+      if (self.audio && self.audio.src && self.audio.src.indexOf(".m4a") !== -1) {
+        self.audio.src = "./music.mp3";
+        if (self.wantPlay && !self.manuallyPaused) {
+          self.audio.play().catch(function(){ self.showNudge(); });
         }
-      });
-    };
-    var s = document.createElement("script");
-    s.src = "https://www.youtube.com/iframe_api"; s.async = true;
-    s.onerror = function(){ self.fail(); };
-    document.head.appendChild(s);
+      } else {
+        self.showNudge();
+      }
+    });
   },
   play: function(){
     this.wantPlay = true;
+    this.manuallyPaused = false;
+    unlockWebAudio();
+    if (!this.audio) this.audio = document.getElementById("bg-audio") || new Audio("./music.mp3");
+    var self = this;
     try {
-      if (this.mode === "mp3" && this.audio) {
-        var p = this.audio.play(); if (p && p.catch) p.catch(function(){ Music.showNudge(); });
-      } else if (this.mode === "yt" && this.ready && this.player) {
-        this.player.unMute(); this.player.setVolume(100);
-        if (this.player.getCurrentTime() < CONFIG.startSeconds - 1) this.player.seekTo(CONFIG.startSeconds, true);
-        this.player.playVideo();
+      var p = this.audio.play();
+      if (p && p.then) {
+        p.then(function(){
+          self.setPlaying(true);
+          removeUnlockEvents();
+        }).catch(function(err){
+          self.showNudge();
+          addUnlockEvents();
+        });
+      } else {
+        self.setPlaying(!self.audio.paused);
       }
-    } catch(e) { this.showNudge(); }
+    } catch(e) {
+      self.showNudge();
+      addUnlockEvents();
+    }
   },
   pause: function(){
     this.wantPlay = false;
-    try {
-      if (this.mode === "mp3" && this.audio) this.audio.pause();
-      else if (this.player && this.player.pauseVideo) this.player.pauseVideo();
-    } catch(e){}
+    this.manuallyPaused = true;
+    if (this.audio) {
+      try { this.audio.pause(); } catch(e){}
+    }
     this.setPlaying(false);
   },
   setPlaying: function(on){
     this.playing = on;
-    musicBtn.classList.toggle("playing", on);
-    if (on) musicBtn.classList.remove("nudge");
-    musicBtn.setAttribute("aria-label", on ? "Pause music" : "Play music");
+    if (musicBtn) {
+      musicBtn.classList.toggle("playing", on);
+      if (on) musicBtn.classList.remove("nudge");
+      musicBtn.setAttribute("aria-label", on ? "Pause music" : "Play music");
+    }
   },
-  showNudge: function(){ if (!this.playing && !this.failed) musicBtn.classList.add("nudge"); },
-  fail: function(){ this.failed = true; this.setPlaying(false); musicBtn.hidden = true; }
+  showNudge: function(){
+    if (!this.playing && musicBtn) musicBtn.classList.add("nudge");
+  }
 };
+
+function unlockWebAudio(){
+  try {
+    var AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      if (!window.__globalAudioCtx) window.__globalAudioCtx = new AudioCtx();
+      if (window.__globalAudioCtx.state === "suspended") {
+        window.__globalAudioCtx.resume();
+      }
+      var buf = window.__globalAudioCtx.createBuffer(1, 1, 22050);
+      var src = window.__globalAudioCtx.createBufferSource();
+      src.buffer = buf;
+      src.connect(window.__globalAudioCtx.destination);
+      src.start(0);
+    }
+  } catch(e){}
+}
+
 Music.init();
-musicBtn.addEventListener("click", function(){ if (Music.playing) Music.pause(); else Music.play(); });
+
+if (musicBtn) {
+  musicBtn.addEventListener("click", function(e){
+    e.stopPropagation();
+    if (Music.playing) Music.pause(); else Music.play();
+  });
+  musicBtn.addEventListener("touchend", function(e){
+    e.stopPropagation();
+  }, { passive: true });
+}
+
+// Background interaction fallback unlocker for mobile (iOS Safari / Android Chrome)
+var unlockEventsAdded = false;
+function onUserGesture(){
+  if (Music.wantPlay && (!Music.audio || Music.audio.paused) && !Music.manuallyPaused) {
+    unlockWebAudio();
+    if (Music.audio) {
+      Music.audio.play().then(function(){
+        Music.setPlaying(true);
+        removeUnlockEvents();
+      }).catch(function(){});
+    }
+  }
+}
+function addUnlockEvents(){
+  if (unlockEventsAdded) return;
+  unlockEventsAdded = true;
+  var events = ["click", "touchstart", "touchend", "pointerdown", "scroll"];
+  events.forEach(function(evt){
+    window.addEventListener(evt, onUserGesture, { passive: true });
+    document.addEventListener(evt, onUserGesture, { passive: true });
+  });
+}
+function removeUnlockEvents(){
+  if (!unlockEventsAdded) return;
+  unlockEventsAdded = false;
+  var events = ["click", "touchstart", "touchend", "pointerdown", "scroll"];
+  events.forEach(function(evt){
+    window.removeEventListener(evt, onUserGesture);
+    document.removeEventListener(evt, onUserGesture);
+  });
+}
+
+// Visibility change handler (pauses on tab hide/phone lock, resumes on return)
+document.addEventListener("visibilitychange", function(){
+  if (document.hidden) {
+    if (Music.playing && Music.audio) Music.audio.pause();
+  } else {
+    if (Music.wantPlay && !Music.manuallyPaused && Music.audio && Music.audio.paused) {
+      Music.audio.play().catch(function(){});
+    }
+  }
+});
 
 /* ---------- opening ---------- */
 var cover = document.getElementById("cover");
@@ -539,10 +622,15 @@ function sparkles(){
   }
 }
 
-function openInvite(){
-  if (opened) return; opened = true;
+function openInvite(e){
+  if (e && e.type === "touchend" && e.cancelable) {
+    e.preventDefault();
+  }
+  if (opened) return;
+  opened = true;
   Music.play();                       // inside the tap, so browsers allow sound
-  if (Music.mode !== "none") { musicBtn.hidden = false; }
+  if (musicBtn) { musicBtn.hidden = false; }
+  addUnlockEvents();                  // ensures if mobile OS delayed playback, next touch immediately plays
   var sr = seal.getBoundingClientRect();
   glow.style.left = (sr.left + sr.width/2) + "px"; glow.style.top = (sr.top + sr.height/2) + "px";
   cover.classList.add("opening");
@@ -558,9 +646,12 @@ function openInvite(){
     glow.classList.remove("on"); glow.classList.add("fade");
   }, t);
   setTimeout(function(){ cover.remove(); glow.remove(); }, t + 1700);
-  setTimeout(function(){ if (Music.mode !== "none" && !Music.playing && !Music.failed) Music.showNudge(); }, 4500);
+  setTimeout(function(){ if (!Music.playing && !Music.manuallyPaused) Music.showNudge(); }, 3500);
 }
 seal.addEventListener("click", openInvite);
+seal.addEventListener("touchend", openInvite);
+cover.addEventListener("click", openInvite);
+cover.addEventListener("touchend", openInvite);
 
 /* ---------- reveal on scroll ---------- */
 function revealHero(){
