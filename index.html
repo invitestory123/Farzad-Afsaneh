@@ -380,6 +380,7 @@ footer{margin-top:16cqi;display:flex;flex-direction:column;align-items:center;wi
       <section class="rsvp" id="rsvp" aria-label="RSVP">
         <p class="script rv">Kindly Reply</p>
         <p class="eyebrow rv">RSVP</p>
+        <p class="rsvp-wa-note rv" style="font-family:var(--f-serif);font-size:clamp(15px,4.2cqi,18px);color:var(--ink-soft);margin:1.5cqi 0 3cqi;font-style:italic">Please RSVP via WhatsApp to <a href="https://wa.me/17033419507" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;text-decoration:none">+1 (703) 341-9507</a></p>
         <div class="rsvp-card rv">
           <form id="rsvp-form" novalidate>
             <div class="field">
@@ -399,7 +400,10 @@ footer{margin-top:16cqi;display:flex;flex-direction:column;align-items:center;wi
             </div>
             <input class="hp" type="checkbox" name="botcheck" id="f-bot" tabindex="-1" autocomplete="off" aria-hidden="true">
             <p class="field-err" id="f-err" role="alert" hidden></p>
-            <button class="btn-gold submit" type="submit" id="f-submit"><span id="f-label">Send RSVP</span></button>
+            <button class="btn-gold submit" type="submit" id="f-submit">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:1.2em;height:1.2em"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              <span id="f-label">Reply via WhatsApp</span>
+            </button>
             <p class="msg-err" id="f-svc-err" role="alert" hidden></p>
           </form>
           <div class="thanks" id="thanks" hidden>
@@ -437,7 +441,9 @@ var CONFIG = {
   youtubeId: "C44KB6qEbYY",
   startSeconds: 13,
   weddingTime: "2026-12-14T17:00:00-08:00",
-  // Web3Forms access key for RSVPs. Free key can be pasted here:
+  // WhatsApp RSVP number
+  whatsappNumber: "+17033419507",
+  // Web3Forms access key for RSVPs (optional):
   web3formsKey: ""
 };
 var BUILD = "site"; // "site" or "preview"
@@ -722,7 +728,7 @@ form.addEventListener("change", function(){ errEl.hidden = true; });
 function rsvpVal(name){ var el = form.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ""; }
 function setBusy(b){
   submitBtn.disabled = b;
-  submitBtn.innerHTML = b ? '<span class="spinner" aria-hidden="true"></span><span>Sending…</span>' : '<span>Send RSVP</span>';
+  submitBtn.innerHTML = b ? '<span class="spinner" aria-hidden="true"></span><span>Opening WhatsApp…</span>' : '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:1.2em;height:1.2em"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span>Reply via WhatsApp</span>';
 }
 
 form.addEventListener("submit", function(e){
@@ -731,64 +737,25 @@ form.addEventListener("submit", function(e){
   var name = form.elements.name.value.trim(), attending = rsvpVal("attending"), message = form.elements.message.value.trim();
   var problem = !name ? "Please enter your name." : !attending ? "Please choose whether you are attending." : "";
   if (problem) { errEl.textContent = problem; errEl.hidden = false; return; }
-  if (form.elements.botcheck.checked) return;
+  if (form.elements.botcheck && form.elements.botcheck.checked) return;
 
-  if (BUILD === "preview") {
-    svcErr.textContent = "This is the design preview, so replies are not sent from here. Guests reply from the hosted invitation link.";
-    svcErr.hidden = false; return;
-  }
-  if (!CONFIG.web3formsKey || CONFIG.web3formsKey.indexOf("__") === 0 || CONFIG.web3formsKey.indexOf("PASTE") === 0) {
-    // Graceful fallback to mailto so RSVPs always work immediately!
-    var mailtoBody = "Dear Afsaneh & Farzad,\n\n" +
-      "Thank you for the warm invitation to your Engagement & Shirinikhori celebration (محفل شیرینی خوری).\n\n" +
-      "Guest name: " + name + "\n" +
-      "Attendance: " + attending + "\n" +
-      "Message: " + (message || "(none)") + "\n\n" +
-      "Warm regards,\n" + name;
-    var mailtoUrl = "mailto:?subject=" + encodeURIComponent("RSVP: " + name + " — " + attending + " (Afsaneh & Farzad Shirinikhori)") + "&body=" + encodeURIComponent(mailtoBody);
-    window.location.href = mailtoUrl;
-    form.hidden = true; thanks.hidden = false;
-    thanksText.textContent = (attending === "Yes" ? "Thank you, " + name + "! Your reply email is ready in your mail app. We look forward to celebrating with you!" : "Thank you for letting us know, " + name + ". You will be dearly missed!");
-    return;
-  }
+  var waPhone = (CONFIG.whatsappNumber || "+17033419507").replace(/[^0-9]/g, "");
+  var waBody = "Dear Afsaneh & Farzad,\n\n" +
+    "Thank you for the warm invitation to your Engagement & Shirinikhori celebration (محفل شیرینی خوری).\n\n" +
+    "• Guest Name: " + name + "\n" +
+    "• Attending: " + attending + "\n" +
+    (message ? "• Message: " + message + "\n\n" : "\n") +
+    "Warm regards,\n" + name;
+  var waUrl = "https://wa.me/" + waPhone + "?text=" + encodeURIComponent(waBody);
 
-  var payload = {
-    access_key: CONFIG.web3formsKey,
-    subject: "RSVP (محفل شیرینی خوری): " + name + " – " + (attending === "Yes" ? "Attending" : "Not attending"),
-    from_name: "Afsaneh & Farzad Shirinikhori RSVP",
-    Name: name,
-    Attending: attending,
-    Message: message || "(none)",
-    botcheck: ""
-  };
-  setBusy(true);
-  var ctrl = ("AbortController" in window) ? new AbortController() : null;
-  var timer = setTimeout(function(){ if (ctrl) ctrl.abort(); }, 20000);
-  fetch("https://api.web3forms.com/submit", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-    body: JSON.stringify(payload),
-    signal: ctrl ? ctrl.signal : undefined
-  }).then(function(res){
-    return res.json().catch(function(){ return { success: false, message: "Unexpected response (HTTP " + res.status + ")." }; });
-  }).then(function(data){
-    clearTimeout(timer); setBusy(false);
-    if (data && data.success === true) {
-      form.hidden = true; thanks.hidden = false;
-      thanksText.textContent = attending === "Yes"
-        ? "Your RSVP has been sent, " + name + ". We can't wait to celebrate with you."
-        : "Your reply has been sent, " + name + ". You will be missed.";
-    } else {
-      svcErr.textContent = "Your RSVP was not sent. " + ((data && data.message) ? data.message : "Please try again.");
-      svcErr.hidden = false;
-    }
-  }).catch(function(err){
-    clearTimeout(timer); setBusy(false);
-    svcErr.textContent = (err && err.name === "AbortError")
-      ? "Sending took too long and was stopped. Please check your connection and tap Send RSVP again."
-      : "Your RSVP could not be sent. Please check your internet connection and try again.";
-    svcErr.hidden = false;
-  });
+  // Directly navigate/open WhatsApp
+  window.location.href = waUrl;
+
+  form.hidden = true;
+  thanks.hidden = false;
+  thanksText.innerHTML = (attending === "Yes"
+    ? "Thank you, <strong>" + name + "</strong>! Your RSVP reply has been prepared for WhatsApp.<br><br><a class=\"btn-gold\" href=\"" + waUrl + "\" target=\"_blank\" rel=\"noopener\" style=\"margin-top:12px;font-size:12px;display:inline-flex;text-decoration:none\">Open WhatsApp to Send</a>"
+    : "Thank you for letting us know, <strong>" + name + "</strong>. Your response has been prepared for WhatsApp.<br><br><a class=\"btn-gold\" href=\"" + waUrl + "\" target=\"_blank\" rel=\"noopener\" style=\"margin-top:12px;font-size:12px;display:inline-flex;text-decoration:none\">Open WhatsApp to Send</a>");
 });
 
 document.getElementById("again").addEventListener("click", function(){

@@ -18,8 +18,10 @@ window.initWeddingRSVP = (form, config, names) => {
   const count = form.querySelector('#rsvp-count');
   const party = form.querySelector('#rsvp-party');
   const help = form.querySelector('.rsvp-help');
+  const whatsapp = String(config.whatsapp || config.whatsappNumber || '+17033419507').replace(/[^0-9]/g, '');
   const email = String(config.email || '').trim();
   const validEmail = /^[^\s@<>?,;:%]+@[^\s@<>?,;:%]+\.[^\s@<>?,;:%]+$/.test(email);
+  const submitBtn = form.querySelector('button[type="submit"]');
   const sync = () => {
     const attending = attendance.value === 'yes';
     party.hidden = !attending;
@@ -29,18 +31,29 @@ window.initWeddingRSVP = (form, config, names) => {
   attendance.addEventListener('change', sync);
   name.addEventListener('input', () => name.setCustomValidity(''));
   sync();
-  help.textContent = validEmail
-    ? 'Your email app will open with your reply. Please send the email to confirm your RSVP.'
-    : 'You’re welcome to fill in your details. Email RSVP will be available once the host adds their address.';
+  if (whatsapp) {
+    if (submitBtn) submitBtn.textContent = 'Reply via WhatsApp';
+    help.textContent = 'Your reply will open directly in WhatsApp (+1 703 341 9507) to confirm your RSVP.';
+  } else {
+    help.textContent = validEmail
+      ? 'Your email app will open with your reply. Please send the email to confirm your RSVP.'
+      : 'You’re welcome to fill in your details. Email RSVP will be available once the host adds their address.';
+  }
   form.addEventListener('submit', event => {
     event.preventDefault();
     name.setCustomValidity(name.value.trim() ? '' : 'Please enter your full name.');
     if (!form.reportValidity()) return;
+    const attending = attendance.value === 'yes';
+    if (whatsapp) {
+      const body = `Dear ${names},\n\nThank you for the warm invitation to your Engagement & Shirinikhori celebration (محفل شیرینی خوری).\n\n• Guest name: ${name.value.trim()}\n• Response: ${attending ? 'Joyfully accepts' : 'Regretfully declines'}\n• Number of guests: ${attending ? count.value : '0'}\n\nWith warm wishes,\n${name.value.trim()}`;
+      window.location.href = `https://wa.me/${whatsapp}?text=${encodeURIComponent(body)}`;
+      help.textContent = 'Your reply is ready in WhatsApp. Please press send to confirm your RSVP.';
+      return;
+    }
     if (!validEmail) {
       help.textContent = 'The host’s RSVP email is not available yet. Your reply has not been sent.';
       return;
     }
-    const attending = attendance.value === 'yes';
     const body = `Dear ${names},\n\nThank you for your kind invitation.\n\nGuest name: ${name.value.trim()}\nResponse: ${attending ? 'Joyfully accepts' : 'Regretfully declines'}\nNumber of guests attending: ${attending ? count.value : '0'}\n\nWith warm wishes,\n${name.value.trim()}`;
     window.location.href = `mailto:${email}?subject=${encodeURIComponent(`Wedding RSVP — ${names}`)}&body=${encodeURIComponent(body)}`;
     help.textContent = 'Your reply is ready in your email app. Please press Send there to confirm your RSVP.';

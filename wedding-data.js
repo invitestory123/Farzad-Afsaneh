@@ -47,9 +47,11 @@ window.WEDDING_DATA = {
     "giftPreference": "Your presence, love, and prayers are our greatest gifts."
   },
   "rsvp": {
+    "whatsapp": "+17033419507",
+    "whatsappNumber": "17033419507",
     "email": "",
     "heading": "Kindly Reply",
-    "note": "We would be honored by your presence. Please let us know if you will be joining us.",
+    "note": "We would be honored by your presence. Please send your RSVP via WhatsApp to +1 (703) 341-9507.",
     "deadline": "December 1st, 2026"
   },
   "media": {
